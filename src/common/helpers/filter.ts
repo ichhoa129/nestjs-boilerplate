@@ -1,7 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { GetManyDTO } from 'src/app/Base/DTO/get_many';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { FilterOperationEnum } from '../enum/filter-operation.enum';
 
 export class FilterHelper {
   public static getQueryBuilder<T>(
