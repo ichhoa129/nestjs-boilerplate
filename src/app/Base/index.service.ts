@@ -13,6 +13,10 @@ export class BaseService<T> {
     return this.baseRepository.getMany(param);
   }
 
+  getManyDisabled(param: GetManyDTO) : Promise<T[]> {
+    return this.baseRepository.getManyDisabled(param);
+  }
+
   getOne(id: number) : Promise<T> {
     return this.baseRepository.getOne(id);
   }
@@ -21,7 +25,6 @@ export class BaseService<T> {
   updateOne(id: number, dto: DeepPartial<T>) : Promise<T> {
     return this.baseRepository.updateOne(id, dto);
   }
-
 
   async softDeleteOne(id: number) : Promise<void> {
     await this.baseRepository.softDeleteOne(id);

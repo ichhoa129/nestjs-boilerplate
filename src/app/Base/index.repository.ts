@@ -1,4 +1,5 @@
 import { NotFoundException } from "@nestjs/common";
+import { FilterHelper } from "src/common/helpers/filter";
 import { DeepPartial, Repository } from "typeorm";
 import { GetManyDTO } from "./DTO/get_many";
 
@@ -16,19 +17,28 @@ export class BaseRepository<T> extends Repository<T> {
   }
 
   async getMany(dto: GetManyDTO) : Promise<any> {
-    const limit : number = dto.limit ? dto.limit : 5;
-    const offset : number = dto.page && dto.page > 1 ? (dto.page - 1) * limit : 0;
-    const data = await this.createQueryBuilder()
-      .take(limit)
-      .skip(offset)
-      .getManyAndCount()
-      return {
-        data: data[0],
-        count: data[0].length,
-        total: data[1],
-        page: dto.page ? dto.page : 1,
-        pageCount: Math.ceil(data[1] / limit)
-      };
+    const data = await FilterHelper.getQueryBuilder<T>(this, dto).getManyAndCount();
+    return {
+      data: data[0],
+      count: data[0].length,
+      total: data[1],
+      page: dto.page ? dto.page : 1,
+      pageCount: Math.ceil(data[1] / dto.limit ? dto.limit : 5)
+    };
+  }
+
+  async getManyDisabled(dto: GetManyDTO) : Promise<any> {
+    const data = await FilterHelper.getQueryBuilder<T>(this, dto)
+      .andWhere(`${this.metadata.targetName}.deletedAt IS NOT NULL`)
+      .withDeleted()
+      .getManyAndCount();
+    return {
+      data: data[0],
+      count: data[0].length,
+      total: data[1],
+      page: dto.page ? dto.page : 1,
+      pageCount: Math.ceil(data[1] / dto.limit ? dto.limit : 5)
+    };
   }
 
   async updateOne(id: number, dto: DeepPartial<T>) : Promise<T> {

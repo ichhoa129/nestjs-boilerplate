@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Role } from "../Role/index.entity";
 
 @Entity('users')
 export class User {
@@ -13,6 +14,10 @@ export class User {
 
   @Column({ default: true })
   gender: boolean;
+
+  
+  @ManyToMany(() => Role, role => role.users)
+  roles: Role[];
 
   @CreateDateColumn()
   createdAt: Date;
